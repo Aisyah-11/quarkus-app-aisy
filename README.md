@@ -48,10 +48,7 @@ src/
 
 1. Start each service using the command:
    ```bash
-   ./mvnw quarkus:dev
-  or
-   
-   mvn quarkus:dev
+   ./mvnw quarkus:dev or mvn quarkus:dev
    ```
 2. Use Postman or curl to access the following endpoints:
 
