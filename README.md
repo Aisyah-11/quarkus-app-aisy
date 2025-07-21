@@ -1,17 +1,17 @@
 
-📦 Desain dan Impelemntasi Microservices dengan Framework Quakrus untuk Aplikasi Low-Latency
+📦 Microservices Application with Quarkus for Low-Latency Systems
 
-🧾 Deskripsi Proyek
+🧾 Project Description
 
-Proyek ini bertujuan untuk mengimplementasikan arsitektur microservice menggunakan framework Quarkus, yang dioptimalkan untuk aplikasi berlatensi rendah dan bersifat highly-concurrent. Sistem ini merupakan simulasi backend e-commerce sederhana dengan tiga layanan utama: Customer Service, Product Service, dan Shipping Service.
+This project aims to implement a microservice architecture using the Quarkus framework, optimized for low-latency and high-concurrent applications. The system is a simulation of a simple e-commerce backend consisting of three main services: Customer Service, Product Service, and Shipping Service.
 
-Setiap layanan berjalan secara independen dan saling terhubung menggunakan REST API melalui protokol HTTP. Pengujian performa dilakukan menggunakan Apache JMeter dengan beban pengguna hingga 500 user secara simultan.
+Each service operates independently and communicates with others via REST API over HTTP. Performance testing is conducted using Apache JMeter with up to 500 concurrent users.
 
 ---
 
-🛠️ Teknologi yang Digunakan
+🛠️ Tools and Dependencies Setup
 
-| Komponen    | Teknologi                              |
+| Component   | Technology                             |
 |----------   |-------------------                     |
 | Framework   | Quarkus (Java)                         |
 | API         | RESTful API                            |
@@ -21,13 +21,15 @@ Setiap layanan berjalan secara independen dan saling terhubung menggunakan REST 
 
 ---
 
-🎯 Struktur layanan
+🎯 Service Structure
 
-🔒 Customer Service – Menangani proses autentikasi dan otorisasi berbasis JWT.
-📦 Product Service – Menyediakan operasi CRUD untuk pengelolaan data produk.
-🚚 Shipping Service – Mengelola pemesanan produk.
+🔒 Customer Service – Handles authentication and authorization based on JWT
+📦 Product Service – Provides CRUD operations for product data management
+🚚 Shipping Service – Manages product orders (accessible to authenticated users only)
 
-Setiap layanan memiliki struktur:
+Each service runs independently, communicates via REST over HTTP, and uses its own PostgreSQL database for data persistence.
+
+Each service follows this structure:
 ```
 src/
  └── main/
@@ -42,78 +44,79 @@ src/
 
 ---
 
-🚀 Cara Menjalankan Aplikasi
+🚀 How to Run the Application
 
-1. Jalankan masing-masing service dengan perintah:
+1. Start each service using the command:
    ```bash
    ./mvnw quarkus:dev / mvn quarkus:dev
    ```
-2. Gunakan Postman atau curl untuk mengakses endpoint berikut:
+2. Use Postman or curl to access the following endpoints:
 
-🔐 Autentikasi (Customer Service)
+🔐 Authentication (Customer Service)
 ```http
 POST /auth/login
 ```
 
- 📄 Produk (Product Service)
+📄 Product Management (Product Service)
 - `GET /product` - List Produk
-- `POST /product` - Tambah Produk *(admin)*
-- `PUT /product/{id}` - Edit Produk *(admin)*
-- `DELETE /product/{id}` - Hapus Produk *(admin)*
+- `POST /product` - Add Product *(admin)*
+- `PUT /product/{id}` - Update Product *(admin)*
+- `DELETE /product/{id}` - Delete Product *(admin)*
 
-📬 Pemesanan (Shipping Service)
+📬 Ordering (Shipping Service)
 ```http
 POST /order
 ```
 
-Setiap request menyertakan `Authorization: Bearer <token>` dari hasil login.
+Each request must include an Authorization: Bearer <token> header from the login response.
 
 ---
 
-🧪 Pengujian Performa
+🧪 Performance Testing
 
-Pengujian dilakukan menggunakan Apache JMeter:
-- Thread: 10 hingga 500 user
-- Ramp-up: 1s hingga 10s
-- Endpoint diuji: login, get product, order
+- Testing was conducted using Apache JMeter:
+- Threads: 10, 50, 100, and 500 users
+- Ramp-up time: 1s, 5s, and 10s
+- Tested Endpoints: login, product list, order
 
-📈 Hasil Uji:
-- Microservices: Latency stabil 85ms – 2s
-- Monolitik: Latency naik drastis hingga 10–20s
-- Tidak ditemukan request failure pada microservices
+📈 Test Results:
 
----
-
-⚖️ Perbandingan Arsitektur
-
-| Aspek              | Monolitik                        | Microservices                     |
-|--------------------|----------------------------------|-----------------------------------|
-| Struktur           | Terpadu                          | Terpisah                          |
-| Skalabilitas       | Terbatas                         | Independen per layanan            |
-| Latency (500 user) | 10–20 detik                      | 85ms – 2 detik                    |
-| Dampak Kegagalan   | Sistem total                     | Isolated ke satu layanan          |
-| Maintenance        | Sulit, kompleks                  | Mudah, modular                    |
+- Microservices: Stable latency between 85ms – 2s
+- Monolithic: Latency increased drastically to 10–20s
+- No request failures observed in microservices
 
 ---
 
-🧩 Catatan Tambahan
+⚖️ Architecture Comparison
 
-- Setiap layanan menggunakan database terpisah untuk memastikan isolasi dan konsistensi data.
-- Token JWT disematkan ke setiap permintaan untuk kontrol akses berdasarkan peran (`@RolesAllowed`).
-- Struktur dan anotasi mengikuti praktik terbaik REST API dan Quarkus.
-
----
-
-📚 Referensi
-
-- Dokumentasi resmi [https://quarkus.io/](https://quarkus.io/)
-- Jurnal RESTI 2024: *Desain dan Implementasi Microservices dengan Framework Quarkus untuk Aplikasi Low-Latency*
+| Aspek              | Monolitik                        | Microservices                    |
+|--------------------|----------------------------------|----------------------------------|
+| Structure          | Unified                          | Docoutpled                       |
+| Scalabiity         | Limited                          | Independent per services         |
+| Latency (500 user) | 10–20 seconds                    | 85ms – 2 seconds                 |
+| Failure Impact     | Entire System                    | Isolated to one service          |
+| Maintenance        | Complex, Hard                    | Easy, modular                    |
 
 ---
 
-👩‍💻 Penulis
+🧩 Additional Notes
 
-**Aisyah Putri Arifah**  
-Program Studi Teknik Informatika  
-Politeknik Negeri Batam  
+- Each service uses a separate database to ensure data isolation and consistency.
+- JWT tokens are embedded in each request to enforce role-based access (@RolesAllowed).
+- The structure and annotations follow best practices of REST API design with Quarkus.
+
+---
+
+📚 References
+
+- Official documentation: https://quarkus.io/
+- RESTI Journal 2024: Design and Implementation of Microservices with Quarkus Framework for Low-Latency Applications
+
+---
+
+👩‍💻 Author
+
+Aisyah Putri Arifah
+Informatics Engineering Program
+Politeknik Negeri Batam
 📧 ar.sam.ais@gmail.com
